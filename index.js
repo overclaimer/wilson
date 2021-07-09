@@ -10,11 +10,10 @@ client.on(`ready`, () => {
     change_nickname();
 });
 
-client.on(`interaction`, async interaction => {
-	if (!interaction.isCommand()) return;
-	if (interaction.commandName === `ping`) {
-		await interaction.reply(`Pong!`);
-	}
+client.on('message', message => {
+    if (message.content === 'ping') {
+      message.channel.send('pong');
+    }
 });
 
 var change_nickname = () =>{
