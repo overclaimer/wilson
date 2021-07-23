@@ -12,6 +12,10 @@ client.on(`ready`, () => {
 
 client.on('message', message => {
 
+    if(message.author.bot){
+        return; // Do not reply to bots. (Or self.)
+    }
+
     var m = message.content.trim();
     var c = m.split(` `);
 
