@@ -4,6 +4,7 @@ const NewsAPI = require('newsapi');
 const fs = require(`fs`);
 
 const { data } = require('./security.js');
+const { randomInt } = require('crypto');
 const nickname = `Wilson`;
 
 
@@ -11,8 +12,27 @@ client.on(`ready`, async () => {
     log(`Client ready.`);
     change_nickname();
 
-    await GetTopNews();
+    var presence = { 
+        activity: { 
+            name: 'Learning',
+            type: 'PLAYING'
+        }, 
+        status: 'dnd'
+    };
+    client.user.setPresence(presence);
+    client.user.setStatus('dnd');
+
+    log("Starting alpha thread.");
+    AlphaThread();
+    
 });
+
+var AlphaThread = async () =>{
+    log("[Alpha Thread] Started!");
+    setInterval(async ()=>{
+        await GetTopNews();
+    }, 1000 * 60 * 15);
+}
 
 client.on('message', async (message) => {
 
@@ -75,22 +95,27 @@ var random = (min, max)=>{
 }
 
 var GetTopNews = async ()=>{
-    log(`Getting news..`);
-    var story = ``;
     const newsapi = new NewsAPI(data.newsApi);
     var a = await newsapi.v2.topHeadlines({
         language: 'en'
     }).then(response => {
         return response;
     });
-    var ttt = a.totalResults;
-    var sss = random(0, ttt);
-    var l = 0;
-    a.articles.forEach((art)=>{
-        if(l == sss){
-            console.log(art);
-        }
-        l++;
-    });
-    
+    if(a.status == 'ok'){
+        var r = randomInt(0, a.articles.length);
+        var ar = a.articles[r];
+    }
+
+    var exampleEmbed = new Discord.MessageEmbed()
+        .setColor('#00ff00')
+        .setTitle(`${ar.title}`)
+        .setURL(`${ar.url}`)
+        .setAuthor(`${ar.source.name}`, `${ar.urlToImage}`, `${ar.url}`)
+        .setDescription(`${ar.description}`)
+        .setThumbnail(`${ar.urlToImage}`)
+        .setImage(`${ar.urlToImage}`)
+        .setTimestamp(`${ar.publishedAt}`)
+        .setFooter(`${ar.author}`, `${ar.url}`);
+    client.channels.cache.get(data.newsid).send(exampleEmbed);
+    log(`Sent news.`);
 }
