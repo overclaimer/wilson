@@ -28,10 +28,10 @@ client.on(`ready`, async () => {
 });
 
 var AlphaThread = async () =>{
-    log("[Alpha Thread] Started!");
+    log("[Alpha Thread] Started! (60 Mins)");
     setInterval(async ()=>{
         await GetTopNews();
-    }, 1000 * 60 * 15);
+    }, 1000 * 60 * 60);
 }
 
 client.on('message', async (message) => {
