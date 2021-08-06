@@ -1,4 +1,4 @@
-![Wilson's Profile Picture](/wilson_pfp.jpg)
+![Wilson's Profile Picture](/wilson_pfp.png)
 
 # Wilson
 A Discord Bot.
