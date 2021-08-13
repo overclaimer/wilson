@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "child_process": "^1.0.2",
     "discord.js": "^12.5.3",
     "fs": "0.0.1-security",
     "newsapi": "^2.4.1"

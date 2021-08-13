@@ -2,6 +2,8 @@ const Discord = require(`discord.js`);
 const client = new Discord.Client();
 const NewsAPI = require('newsapi');
 const fs = require(`fs`);
+var exec = require('child_process').exec, child;
+
 
 const { data } = require('./security.js');
 const { randomInt } = require('crypto');
@@ -24,14 +26,33 @@ client.on(`ready`, async () => {
 
     log("Starting alpha thread.");
     AlphaThread();
+    log("Starting beta thread.");
+    BetaThread();
     
 });
 
 var AlphaThread = async () =>{
     log("[Alpha Thread] Started! (60 Mins)");
     setInterval(async ()=>{
-        await GetTopNews();
-    }, 1000 * 60 * 60);
+        var i = randomInt(0, 10);
+        if(i == 1){
+            await GetTopNews();
+        }
+    }, 1000 * 60 * 30);
+}
+var BetaThread = async ()=>{
+    log("[Beta Thread] Started! (1 Min)");
+    setInterval(async ()=>{
+        PingTest();
+    }, 1000 * 60 * 1);
+}
+
+var PingTest = async () => {
+    child = exec('ping -c 1 google.com', function(error, stdout, stderr){
+        if(error !== null){
+            log(`Connection lost.`);
+        }
+   });
 }
 
 client.on('message', async (message) => {
@@ -104,18 +125,20 @@ var GetTopNews = async ()=>{
     if(a.status == 'ok'){
         var r = randomInt(0, a.articles.length);
         var ar = a.articles[r];
-    }
-
-    var exampleEmbed = new Discord.MessageEmbed()
-        .setColor('#00ff00')
-        .setTitle(`${ar.title}`)
-        .setURL(`${ar.url}`)
-        .setAuthor(`${ar.source.name}`, `${ar.urlToImage}`, `${ar.url}`)
-        .setDescription(`${ar.description}`)
-        .setThumbnail(`${ar.urlToImage}`)
-        .setImage(`${ar.urlToImage}`)
-        .setTimestamp(`${ar.publishedAt}`)
-        .setFooter(`${ar.author}`, `${ar.url}`);
-    client.channels.cache.get(data.newsid).send(exampleEmbed);
-    log(`Sent news.`);
+        var exampleEmbed = new Discord.MessageEmbed()
+            .setColor('#00ff00')
+            .setTitle(`${ar.title}`)
+            .setURL(`${ar.url}`)
+            .setAuthor(`${ar.source.name}`, `${ar.urlToImage}`, `${ar.url}`)
+            .setDescription(`${ar.description}`)
+            .setThumbnail(`${ar.urlToImage}`)
+            .setImage(`${ar.urlToImage}`)
+            .setTimestamp(`${ar.publishedAt}`)
+            .setFooter(`${ar.author}`, `${ar.url}`);
+        client.channels.cache.get(data.newsid).send(exampleEmbed);
+        log(`Sent news.`);
+    }else{
+        log(`Could not get news.`);
+    }   
 }
+
